@@ -1,7 +1,9 @@
 import 'package:attendance_system/components/colors.dart';
 import 'package:attendance_system/components/constant/size.dart';
 import 'package:attendance_system/components/image.dart';
+import 'package:attendance_system/screen/add_course.dart';
 import 'package:attendance_system/screen/auth/log_in.dart';
+import 'package:attendance_system/screen/code_trial.dart';
 import 'package:flutter/material.dart';
 import 'package:scroll_date_picker/scroll_date_picker.dart';
 
@@ -20,15 +22,23 @@ class _HomePageState extends State<HomePage> {
   int curentindex = 0;
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: homePage(context),
+    return SafeArea(
+      child: Scaffold(
+        body: ListView(
+          children: [
+            homePage(context),
+          ],
+        ),
+      ),
     );
   }
 
   Padding homePage(BuildContext context) {
     return Padding(
       padding: EdgeInsets.only(
-          top: pagelength(context: context, value: 30), left: 16, right: 16),
+          // top: pagelength(context: context, value: 30),
+          left: 16,
+          right: 16),
       child: Column(
         children: [
           Row(
@@ -78,7 +88,7 @@ class _HomePageState extends State<HomePage> {
           const SizedBox(height: 20),
           GestureDetector(
             onTap: () => Navigator.push(context,
-                MaterialPageRoute(builder: (context) => const CoursePage())),
+                MaterialPageRoute(builder: (context) => const Addcourses())),
             child: const Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -89,7 +99,7 @@ class _HomePageState extends State<HomePage> {
                     fontWeight: FontWeight.w600,
                   ),
                 ),
-                Text('>',
+                Text('+',
                     style: TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.w600,
@@ -124,7 +134,14 @@ class _HomePageState extends State<HomePage> {
                   buttomPage(image: 'home'),
                   buttomPage(image: 'book-text'),
                   buttomPage(image: 'parking-circle'),
-                  buttomPage(image: 'bar-chart-3'),
+                  GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => CodeTrial()));
+                      },
+                      child: buttomPage(image: 'bar-chart-3')),
                 ],
               ),
             ),

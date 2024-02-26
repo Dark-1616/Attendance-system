@@ -5,6 +5,7 @@ import 'package:attendance_system/components/constant/size.dart';
 import 'package:attendance_system/components/image.dart';
 import 'package:attendance_system/screen/auth/log_in.dart';
 import 'package:attendance_system/screen/auth/sign_in.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -24,6 +25,11 @@ class MyApp extends StatelessWidget {
   const MyApp({super.key});
   @override
   Widget build(BuildContext context) {
+    final db = FirebaseFirestore.instance;
+
+    // void createTables() async {
+    //   await db.collection(collectionPath)
+    // }
     return MultiProvider(
         providers: [
           ChangeNotifierProvider(create: (context) => AppTheme(isDark: false)),
@@ -53,77 +59,81 @@ class MyHomePage extends StatelessWidget {
           body: Container(
               height: pagelength(context: context, value: 896),
               width: pagewidth(context: context, value: 414),
-              child: Stack(children: [
-                Positioned(
-                    left: 105,
-                    child: Container(
-                      child: ImageWidget(
-                          width: 326, heigth: 281, image: 'background2'),
-                    )),
-                Positioned(
-                    bottom: 0,
-                    right: 100,
-                    child: ImageWidget(
-                        width: 400, heigth: 200, image: 'background')),
-                Center(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Padding(
-                          padding: EdgeInsets.only(
-                              //left: pagewidth(context: context, value: 65),
-                              top: pagelength(context: context, value: 70)),
+              child: ListView(
+                children: [
+                  Stack(children: [
+                    Positioned(
+                        left: 105,
+                        child: Container(
                           child: ImageWidget(
-                            image: 'schoologo',
-                            heigth: 80,
-                            width: 80,
-                          )),
-                      ImageWidget(
-                          width: 300, heigth: 300, image: 'welcome-image'),
-                      const SizedBox(
-                        width: 350,
-                        child: Text(
-                          'Ensure your presence during courses here',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                              fontSize: 26,
-                              fontWeight: FontWeight.w400,
-                              color: Appcolors.yellow),
-                        ),
-                      ),
-                      const SizedBox(height: 25),
-                      buttonWidget(
-                        action: () => Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const LogIn())),
-                        child: const Center(
-                            child: Text(
-                          'login',
-                          style: TextStyle(
-                              fontWeight: FontWeight.w600, fontSize: 18),
+                              width: 326, heigth: 281, image: 'background2'),
                         )),
-                      ),
-                      const SizedBox(height: 15),
-                      buttonWidget(
-                        action: () => Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const SignIn())),
-                        color: Appcolors.white,
-                        child: const Center(
+                    Positioned(
+                        bottom: 0,
+                        right: 100,
+                        child: ImageWidget(
+                            width: 400, heigth: 200, image: 'background')),
+                    Center(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Padding(
+                              padding: EdgeInsets.only(
+                                  //left: pagewidth(context: context, value: 65),
+                                  top: pagelength(context: context, value: 70)),
+                              child: ImageWidget(
+                                image: 'schoologo',
+                                heigth: 80,
+                                width: 80,
+                              )),
+                          ImageWidget(
+                              width: 300, heigth: 300, image: 'welcome-image'),
+                          const SizedBox(
+                            width: 350,
                             child: Text(
-                          'Register',
-                          style: TextStyle(
-                              fontWeight: FontWeight.w600,
-                              fontSize: 18,
-                              color: Appcolors.yellow),
-                        )),
-                      )
-                    ],
-                  ),
-                )
-              ]))),
+                              'Ensure your presence during courses here',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                  fontSize: 26,
+                                  fontWeight: FontWeight.w400,
+                                  color: Appcolors.yellow),
+                            ),
+                          ),
+                          const SizedBox(height: 25),
+                          buttonWidget(
+                            action: () => Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => const LogIn())),
+                            child: const Center(
+                                child: Text(
+                              'login',
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w600, fontSize: 18),
+                            )),
+                          ),
+                          const SizedBox(height: 15),
+                          buttonWidget(
+                            action: () => Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => const SignIn())),
+                            color: Appcolors.white,
+                            child: const Center(
+                                child: Text(
+                              'Register',
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 18,
+                                  color: Appcolors.yellow),
+                            )),
+                          )
+                        ],
+                      ),
+                    )
+                  ]),
+                ],
+              ))),
     );
   }
 }

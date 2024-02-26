@@ -45,122 +45,132 @@ class _LogInState extends State<LogIn> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Appcolors.white,
-      body: Stack(
+      body: ListView(
         children: [
-          Positioned(
-              left: 105,
-              child: Container(
-                child:
-                    ImageWidget(width: 326, heigth: 281, image: 'background2'),
-              )),
-          Positioned(
-              bottom: 0,
-              right: 130,
-              child: ImageWidget(width: 320, heigth: 174, image: 'background')),
-          Center(
-            child: Column(
-              children: [
-                SizedBox(height: 100),
-                Padding(
-                    padding: EdgeInsets.only(
-                        //left: pagewidth(context: context, value: 65),
-                        top: pagelength(context: context, value: 70)),
+          Stack(
+            children: [
+              Positioned(
+                  left: 105,
+                  child: Container(
                     child: ImageWidget(
-                      image: 'schoologo',
-                      heigth: 80,
-                      width: 80,
-                    )),
-                heightSpace(20),
-                const Center(
-                  child: Text(
-                    'log in',
-                    style: TextStyle(
-                        color: Appcolors.yellow,
-                        fontSize: 30,
-                        fontWeight: FontWeight.w600),
-                  ),
+                        width: 326, heigth: 281, image: 'background2'),
+                  )),
+              Positioned(
+                  bottom: 0,
+                  right: 130,
+                  child: ImageWidget(
+                      width: 320, heigth: 174, image: 'background')),
+              Center(
+                child: Column(
+                  children: [
+                    SizedBox(height: 50),
+                    Padding(
+                        padding: EdgeInsets.only(
+                            //left: pagewidth(context: context, value: 65),
+                            top: pagelength(context: context, value: 70)),
+                        child: ImageWidget(
+                          image: 'schoologo',
+                          heigth: 80,
+                          width: 80,
+                        )),
+                    heightSpace(20),
+                    const Center(
+                      child: Text(
+                        'log in',
+                        style: TextStyle(
+                            color: Appcolors.yellow,
+                            fontSize: 30,
+                            fontWeight: FontWeight.w600),
+                      ),
+                    ),
+                    // const Center(
+                    //   child: Text(
+                    //     ' here to continue',
+                    //     style: TextStyle(fontSize: 24, fontWeight: FontWeight.w600),
+                    //   ),
+                    // ),
+                    // const SizedBox(height: 30),
+                    // inputButton(
+                    //   context: context,
+                    //   label: 'Name',
+                    //   controller: _usernameController,
+                    // ),
+                    const SizedBox(height: 20),
+                    inputButton(
+                      context: context,
+                      label: 'Email',
+                      controller: _emailController,
+                    ),
+                    const SizedBox(height: 20),
+                    inputButton(
+                      context: context,
+                      label: 'Password',
+                      controller: _passwordController,
+                    ),
+                    const SizedBox(height: 60),
+                    buttonWidget(
+                        action: () => _signIn(),
+                        radius: 10,
+                        length: 50,
+                        width: 350,
+                        child: Center(
+                          child: isSigningIn
+                              ? const CircularProgressIndicator(
+                                  color: Colors.white,
+                                )
+                              : const Text('log in',
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: 20)),
+                        )),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    const Text(
+                      'create a new account',
+                      style: TextStyle(
+                          fontSize: 14,
+                          color: Appcolors.black,
+                          decoration: TextDecoration.underline),
+                    )
+                  ],
                 ),
-                // const Center(
-                //   child: Text(
-                //     ' here to continue',
-                //     style: TextStyle(fontSize: 24, fontWeight: FontWeight.w600),
-                //   ),
-                // ),
-                // const SizedBox(height: 30),
-                // inputButton(
-                //   context: context,
-                //   label: 'Name',
-                //   controller: _usernameController,
-                // ),
-                const SizedBox(height: 20),
-                inputButton(
-                  context: context,
-                  label: 'Email',
-                  controller: _emailController,
-                ),
-                const SizedBox(height: 20),
-                inputButton(
-                  context: context,
-                  label: 'Password',
-                  controller: _passwordController,
-                ),
-                const SizedBox(height: 60),
-                buttonWidget(
-                    action: () => _signIn(),
-                    radius: 10,
-                    length: 50,
-                    width: 350,
-                    child: Center(
-                      child: isSigningIn
-                          ? const CircularProgressIndicator(
-                              color: Colors.white,
-                            )
-                          : const Text('log in',
-                              style: TextStyle(
-                                  fontWeight: FontWeight.w600, fontSize: 20)),
-                    )),
-                const SizedBox(
-                  height: 20,
-                ),
-                const Text(
-                  'create a new account',
-                  style: TextStyle(
-                      fontSize: 14,
-                      color: Appcolors.black,
-                      decoration: TextDecoration.underline),
-                )
-              ],
-            ),
-          )
+              )
+            ],
+          ),
         ],
       ),
     );
   }
 
   void _signIn() async {
-    setState(() {
-      isSigningIn = true;
-    });
-
-    // String username = _usernameController.text;
-    String email = _emailController.text;
-    String password = _passwordController.text;
-    // String matricule = _matriculeController.text;
-
-    User? user = await _auth.signInWithEmailAndPassword(
-      email,
-      password,
-    );
-
-    setState(() {
-      isSigningIn = false;
-    });
-    if (user != null) {
-      messagePopup(message: "User is successfully Signedin");
-      Navigator.push(
+    Navigator.push(
           context, MaterialPageRoute(builder: (context) => HomePage()));
-    } else {
-      messagePopup(message: "Some error happend");
-    }
+    // setState(() {
+    //   isSigningIn = true;
+    // });
+
+    // // String username = _usernameController.text;
+    // String email = 'you@gmail.com';
+    // String password = '123456';
+    // // String email = _emailController.text;
+    // // String password = _passwordController.text;
+    // // String matricule = _matriculeController.text;
+
+    // User? user = await _auth.signInWithEmailAndPassword(
+    //   email,
+    //   password,
+    // );
+
+    // setState(() {
+    //   isSigningIn = false;
+    // });
+    // if (user != null) {
+    //   messagePopup(message: "User is successfully Signedin");
+    //   Navigator.push(
+    //       context, MaterialPageRoute(builder: (context) => HomePage()));
+    // } else {
+    //   messagePopup(message: "Some error happend");
+    // }
   }
 }

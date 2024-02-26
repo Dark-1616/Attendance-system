@@ -1,103 +1,221 @@
+import 'dart:math' show cos, sqrt, asin;
 import 'package:attendance_system/components/constant/buttons.dart';
 import 'package:attendance_system/components/colors.dart';
 import 'package:attendance_system/components/image.dart';
+import 'package:attendance_system/components/input_button.dart';
+import 'package:attendance_system/screen/setting.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 
 class StudentAttendancePage extends StatefulWidget {
   StudentAttendancePage({required this.course, super.key});
   dynamic course;
   @override
   State<StudentAttendancePage> createState() => _StudentAttendancePageState();
-  TextEditingController _controller = TextEditingController();
 }
 
 class _StudentAttendancePageState extends State<StudentAttendancePage> {
+  TextEditingController controller = TextEditingController();
+  late Position position;
+  // The code you want to search for
+  List documents = [];
+  Future<void> fetchDocuments({required String code}) async {
+    QuerySnapshot snapshot = await FirebaseFirestore.instance
+        .collection('code')
+        .where('code', isEqualTo: code)
+        .get();
+    storeCode();
+    print(calculateDistance(
+        lat2: snapshot.docs[0]['latitude'],
+        lon2: snapshot.docs[0]['longitude'],
+        lat1: position.latitude,
+        lon1: position.longitude));
+    print(snapshot.docs[0]['distance']);
+
+    setState(() {
+      documents = snapshot.docs;
+    });
+  }
+
+  Future<Position> _determinePosition() async {
+    bool serviceEnabled;
+    LocationPermission permission;
+
+    // Test if location services are enabled.
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      // Location services are not enabled don't continue
+      // accessing the position and request users of the
+      // App to enable the location services.
+      return Future.error('Location services are disabled.');
+    }
+
+    permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        return Future.error('Location permissions are denied');
+      }
+    }
+
+    if (permission == LocationPermission.deniedForever) {
+      // Permissions are denied forever, handle appropriately.
+      return Future.error(
+          'Location permissions are permanently denied, we cannot request permissions.');
+    }
+
+    return await Geolocator.getCurrentPosition(
+      desiredAccuracy: LocationAccuracy.high,
+    );
+  }
+
+  void storeCode() async {
+    // DateTime now = DateTime.now();
+    position = await _determinePosition();
+
+    // Store the code and timestamp in Firebase Firestore
+    // FirebaseFirestore firestore = FirebaseFirestore.instance;
+    // CollectionReference codesCollection = firestore.collection('code');
+
+    // try {
+    //   await codesCollection.add({
+    //     'code': code,
+    //     'Time': now,
+    //     'name': widget.course["name"],
+    //     'latitude': position.latitude,
+    //     'longitude': position.longitude,
+    //     'distance': distance,
+    //     "duration": duration,
+    //     "status": 'active'
+    //   });
+    //   print('Code stored successfully');
+    // } catch (e) {
+    //   print('Error storing code: $e');
+    // }
+  }
+
+  double calculateDistance(
+      {required double lat1,
+      required double lon1,
+      required double lat2,
+      required double lon2}) {
+    var p = 0.017453292519943295;
+    var c = cos;
+    var a = 0.5 -
+        c((lat2 - lat1) * p) / 2 +
+        c(lat1 * p) * c(lat2 * p) * (1 - c((lon2 - lon1) * p)) / 2;
+    var distance = 12742 * asin(sqrt(a));
+
+    // Return the distance in meters
+    return distance * 1000;
+  }
+
+  // double calculateDistance(
+  //     {required double lat1,
+  //     required double lon1,
+  //     required double lat2,
+  //     required double lon2}) {
+  //   const double earthRadius = 6371000; // Radius of the Earth in meters
+
+  //   // Convert latitude and longitude from degrees to radians
+  //   double lat1Radians = _degreesToRadians(lat1);
+  //   double lon1Radians = _degreesToRadians(lon1);
+  //   double lat2Radians = _degreesToRadians(lat2);
+  //   double lon2Radians = _degreesToRadians(lon2);
+
+  //   // Calculate the differences between the latitudes and longitudes
+  //   double latDiff = lat2Radians - lat1Radians;
+  //   double lonDiff = lon2Radians - lon1Radians;
+
+  //   // Apply the Haversine formula
+  //   double a = pow(sin(latDiff / 2), 2) +
+  //       cos(lat1Radians) * cos(lat2Radians) * pow(sin(lonDiff / 2), 2);
+  //   double c = 2 * atan2(sqrt(a), sqrt(1 - a));
+  //   double distance = earthRadius * c;
+
+  //   return distance;
+  // }
+
+  // double _degreesToRadians(double degrees) {
+  //   return degrees * pi / 180;
+  // }
+
+  @override
+  void initState() {
+    storeCode();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        body: Column(
-      children: [
-        SizedBox(
-            width: 414,
-            height: 400,
-            child: Stack(children: [
-              Positioned(
-                  top: -20,
-                  child:
-                      ImageWidget(width: 414, heigth: 407, image: 'Rectangle')),
-              Align(
-                  alignment: Alignment.bottomCenter,
-                  child: Column(mainAxisSize: MainAxisSize.min, children: [
-                    Padding(
-                      padding: const EdgeInsets.only(left: 18, right: 18),
-                      child: headerSection(context),
-                    ),
-                    const SizedBox(height: 60),
-                    Text(
-                      widget.course["name"],
-                      style:
-                          TextStyle(fontSize: 30, fontWeight: FontWeight.w600),
-                    ),
-                    Text(
-                      widget.course["code"],
-                      style:
-                          TextStyle(fontSize: 30, fontWeight: FontWeight.w600),
-                    ),
-                  ])),
-              const SizedBox(height: 120),
-              TextFormField(),
-              Container(
-                  height: 60,
-                  width: 240,
-                  child: Expanded(
-                      child: TextField(
-                    keyboardType: TextInputType.multiline,
-                    decoration: InputDecoration(
-                      hintText: ('code'),
-                      border: InputBorder.none,
-                      labelStyle: TextStyle(fontSize: 30),
-                    ),
-                  )))
-            ])),
-        const SizedBox(height: 60),
-        buttonWidget(
-          length: 48,
-          width: 220,
-          radius: 12,
-          child: const Center(
-            child: Text(
-              'Generate code',
-              style: TextStyle(fontWeight: FontWeight.w500, fontSize: 15),
-            ),
+    return SafeArea(
+      child: Scaffold(
+          body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(left: 18, right: 18),
+            child: headerSection(context),
           ),
-        ),
-        const SizedBox(height: 23),
-        buttonWidget(
+          const SizedBox(height: 60),
+          Text(
+            widget.course["name"],
+            style: const TextStyle(fontSize: 30, fontWeight: FontWeight.w600),
+          ),
+          Text(
+            widget.course["matricule"],
+            style: const TextStyle(fontSize: 30, fontWeight: FontWeight.w600),
+          ),
+          const SizedBox(height: 120),
+          inputButton(
+            context: context,
+            label: '',
+            controller: controller,
+          ),
+          const SizedBox(height: 60),
+          buttonWidget(
+            action: () {
+              fetchDocuments(code: controller.text);
+            },
             length: 48,
             width: 220,
             radius: 12,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'Presence taken',
-                    style: TextStyle(fontWeight: FontWeight.w500, fontSize: 15),
-                  ),
-                  Container(
-                    width: 20,
-                    height: 20,
-                    decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: Appcolors.ligthgray,
-                        border: Border.all(color: Appcolors.gray)),
-                  )
-                ],
+            child: const Center(
+              child: Text(
+                'Check',
+                style: TextStyle(fontWeight: FontWeight.w500, fontSize: 15),
               ),
-            )),
-      ],
-    ));
+            ),
+          ),
+          const SizedBox(height: 23),
+          buttonWidget(
+              length: 48,
+              width: 220,
+              radius: 12,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      'Presence taken',
+                      style:
+                          TextStyle(fontWeight: FontWeight.w500, fontSize: 15),
+                    ),
+                    Container(
+                      width: 20,
+                      height: 20,
+                      decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Appcolors.ligthgray,
+                          border: Border.all(color: Appcolors.gray)),
+                    )
+                  ],
+                ),
+              )),
+        ],
+      )),
+    );
   }
 
   Row headerSection(BuildContext context) {
@@ -117,119 +235,6 @@ class _StudentAttendancePageState extends State<StudentAttendancePage> {
               child: ImageWidget(width: 23, heigth: 24, image: 'Arrow'),
             ),
           )),
-      settingPart(context)
     ]);
-  }
-
-  GestureDetector settingPart(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        showModalBottomSheet(
-            backgroundColor: Colors.transparent,
-            context: context,
-            builder: (BuildContext context) {
-              return Padding(
-                  padding: const EdgeInsets.only(top: 20),
-                  child: Container(
-                      width: 414,
-                      height: 400,
-                      decoration: const BoxDecoration(
-                          borderRadius: BorderRadius.only(
-                              topLeft: Radius.circular(30),
-                              topRight: Radius.circular(30)),
-                          color: Colors.white),
-                      child: Padding(
-                          padding: const EdgeInsets.only(top: 32, left: 46),
-                          child: Column(
-                            children: [
-                              const Align(
-                                alignment: Alignment.topLeft,
-                                child: Text(
-                                  'Distance',
-                                  style: TextStyle(
-                                      fontSize: 24,
-                                      fontWeight: FontWeight.w600),
-                                ),
-                              ),
-                              Align(
-                                alignment: Alignment.topLeft,
-                                child: Container(
-                                    height: 44,
-                                    width: 310,
-                                    padding: EdgeInsets.all(8),
-                                    decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(8),
-                                        border: Border.all(
-                                            color: Appcolors.ligthgray)),
-                                    child: const TextField(
-                                        decoration: InputDecoration(
-                                            label: Text('Distance in meters'),
-                                            border: InputBorder.none))),
-                              ),
-                              const SizedBox(height: 30),
-                              const Align(
-                                alignment: Alignment.topLeft,
-                                child: Text(
-                                  'Valide code time',
-                                  style: TextStyle(
-                                      fontSize: 24,
-                                      fontWeight: FontWeight.w600),
-                                ),
-                              ),
-                              Align(
-                                  alignment: Alignment.topLeft,
-                                  child: Container(
-                                      height: 44,
-                                      width: 310,
-                                      padding: EdgeInsets.all(8),
-                                      decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(8),
-                                          border: Border.all(
-                                              color: Appcolors.ligthgray)),
-                                      child: TextField(
-                                        decoration: InputDecoration(
-                                            label: Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment
-                                                      .spaceBetween,
-                                              children: [
-                                                const Text('00:00:00'),
-                                                ImageWidget(
-                                                    width: 24,
-                                                    heigth: 24,
-                                                    image: 'timer')
-                                              ],
-                                            ),
-                                            border: InputBorder.none),
-                                      ))),
-                              const SizedBox(height: 20),
-                              Padding(
-                                padding: const EdgeInsets.only(right: 32),
-                                child: buttonWidget(
-                                  child: const Center(
-                                    child: Text(
-                                      'Save',
-                                      style: TextStyle(
-                                          fontSize: 20,
-                                          fontWeight: FontWeight.w500),
-                                    ),
-                                  ),
-                                  width: 200,
-                                  length: 48,
-                                ),
-                              )
-                            ],
-                          ))));
-            });
-      },
-      child: Container(
-          height: 36,
-          width: 36,
-          decoration: BoxDecoration(
-              color: Appcolors.deepyellow,
-              borderRadius: BorderRadius.circular(12)),
-          child: ImageWidget(width: 23, heigth: 24, image: 'settings')),
-    );
   }
 }

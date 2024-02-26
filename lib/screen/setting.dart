@@ -13,9 +13,8 @@ class SettingsPage extends StatelessWidget {
         children: [
           ImageWidget(width: 414, heigth: 407, image: 'Rectangle'),
           Align(
-            alignment: Alignment.bottomCenter,
-            child: Column(
-              children: [
+              alignment: Alignment.bottomCenter,
+              child: Column(children: [
                 Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -41,13 +40,9 @@ class SettingsPage extends StatelessWidget {
                   'Mathematics',
                   style: TextStyle(fontSize: 36, fontWeight: FontWeight.w600),
                 ),
-                const Text(
-                  'mth 350',
-                  style: TextStyle(fontSize: 36, fontWeight: FontWeight.w600)
-                )
-              ]
-            )
-          ),
+                const Text('mth 350',
+                    style: TextStyle(fontSize: 36, fontWeight: FontWeight.w600))
+              ])),
         ],
       ),
     );

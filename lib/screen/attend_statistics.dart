@@ -19,12 +19,10 @@ class AttendStat extends StatefulWidget {
 class _AttendStatState extends State<AttendStat> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Appcolors.white,
-      body: SizedBox(
-        height: pagelength(context: context, value: 896),
-        width: pagewidth(context: context, value: 414),
-        child: Stack(
+    return SafeArea(
+      child: Scaffold(
+        backgroundColor: Appcolors.white,
+        body: Stack(
           children: [
             Container(
                 height: pagelength(context: context, value: 320),
@@ -57,7 +55,7 @@ class _AttendStatState extends State<AttendStat> {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.only(top: 40, left: 20, right: 10),
+              padding: const EdgeInsets.only(left: 20, right: 10),
               child: Column(
                 children: [
                   Row(
@@ -99,7 +97,7 @@ class _AttendStatState extends State<AttendStat> {
                   ),
                   Center(
                     child: TextComponent(
-                      text: widget.course["code"],
+                      text: widget.course["matricule"],
                       size: 24,
                     ),
                   ),
