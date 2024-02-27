@@ -4,6 +4,7 @@ import 'package:attendance_system/components/image.dart';
 import 'package:attendance_system/screen/add_course.dart';
 import 'package:attendance_system/screen/auth/log_in.dart';
 import 'package:attendance_system/screen/code_trial.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:scroll_date_picker/scroll_date_picker.dart';
 
@@ -67,7 +68,7 @@ class _HomePageState extends State<HomePage> {
             width: 320,
             decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(12),
-                color: Appcolors.white,
+                color: Appcolors.yellow,
                 boxShadow: const [
                   BoxShadow(
                       spreadRadius: 2.5,
@@ -85,7 +86,7 @@ class _HomePageState extends State<HomePage> {
               },
             ),
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: 40),
           GestureDetector(
             onTap: () => Navigator.push(context,
                 MaterialPageRoute(builder: (context) => const Addcourses())),
@@ -111,18 +112,16 @@ class _HomePageState extends State<HomePage> {
               width: 500,
               height: 100,
               child: ListView(scrollDirection: Axis.horizontal, children: [
-                IconRow(name: 'Table'),
-                IconRow(name: 'Chair'),
-                IconRow(name: 'Chair'),
-                IconRow(name: 'Chair'),
-                IconRow(name: 'Sofa'),
-                IconRow(name: 'Sofa'),
-                IconRow(name: 'Lamp'),
-                IconRow(name: 'Cabinet'),
-                IconRow(name: 'Lamp')
+                IconRow(name: 'MTH 2001'),
+                IconRow(name: 'ICT 1112'),
+                IconRow(name: 'ACC 3116'),
+                IconRow(name: 'BNF 1121'),
+                IconRow(name: 'MTH 1171'),
+                IconRow(name: 'ICT 2140'),
+                IconRow(name: 'ICT 1101'),
               ])),
           // SizedBox(height: 160),
-          ImageWidget(width: 450, heigth: 400, image: 'class'),
+          ImageWidget(width: 450, heigth: 350, image: 'class'),
           SizedBox(
             height: 60,
             width: 414,
@@ -181,26 +180,61 @@ Widget IconRow({
 }) {
   return Padding(
     padding: const EdgeInsets.only(right: 11),
-    child: Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        const SizedBox(
-          height: 5,
+    child: Expanded(
+        child: StreamBuilder<QuerySnapshot>(
+      stream: FirebaseFirestore.instance.collection('course').snapshots(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Center(child: CircularProgressIndicator());
+        }
+        if (snapshot.hasError) {
+          return Center(child: Text('Error: ${snapshot.error}'));
+        }
+        return Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const SizedBox(
+              height: 5,
+            ),
+            Container(
+              padding: const EdgeInsets.all(14),
+              height: 80,
+              width: 80,
+              decoration: BoxDecoration(
+                  color: Appcolors.ligthgray,
+                  borderRadius: BorderRadius.circular(50)),
+              child: Center(
+                  child: Text(
+                name,
+                style:
+                    const TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+              )),
+            ),
+          ],
+        );
+      },
+    )
+        // child: Column(
+        //   mainAxisAlignment: MainAxisAlignment.center,
+        //   children: [
+        //     const SizedBox(
+        //       height: 5,
+        //     ),
+        //     Container(
+        //       padding: const EdgeInsets.all(14),
+        //       height: 80,
+        //       width: 80,
+        //       decoration: BoxDecoration(
+        //           color: Appcolors.ligthgray,
+        //           borderRadius: BorderRadius.circular(50)),
+        //       child: Center(
+        //           child: Text(
+        //         name,
+        //         style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+        //       )),
+        //     ),
+        //   ],
+        // ),
         ),
-        Container(
-          padding: const EdgeInsets.all(14),
-          height: 80,
-          width: 80,
-          decoration: BoxDecoration(
-              color: Appcolors.ligthgray,
-              borderRadius: BorderRadius.circular(50)),
-          child: Center(
-              child: Text(
-            name,
-            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
-          )),
-        ),
-      ],
-    ),
   );
 }

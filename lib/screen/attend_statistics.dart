@@ -17,6 +17,13 @@ class AttendStat extends StatefulWidget {
 }
 
 class _AttendStatState extends State<AttendStat> {
+  String role = "";
+
+  void checkrole() {
+    role = "admin";
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -108,25 +115,52 @@ class _AttendStatState extends State<AttendStat> {
                     image: 'classmates',
                   ),
                   const SizedBox(height: 30),
-                  buttonWidget(
-                      length: 50,
-                      width: 280,
-                      radius: 12,
-                      action: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => AttendancePage(
-                                      course: widget.course,
-                                    )));
-                      },
-                      child: const Center(
-                        child: Text(
-                          'Attendance',
-                          style: TextStyle(
-                              fontSize: 22, fontWeight: FontWeight.w500),
-                        ),
-                      )),
+                  // ElevatedButton(
+                  //   onPressed: checkrole,
+                  //   child: Text("check user role"),
+                  // ),
+                  // SizedBox(height: 20),
+                  // if (role == "admin")
+                  //   AttendancePage(course: course)
+                  // else if (role == "user")
+                  //   StudentAttendancePage(course: course)
+                  // else
+                  //   Text(""),
+                  GestureDetector(
+                    onTap: checkrole,
+                    child: Container(
+                        height: 50,
+                        width: 280,
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(12),
+                            color: Appcolors.yellow),
+                        child: const Center(
+                          child: Text('Attendance',
+                              style: TextStyle(
+                                  fontSize: 22, fontWeight: FontWeight.w500)),
+                        )),
+                  ),
+                  // buttonWidget(
+                  //     length: 50,
+                  //     width: 280,
+                  //     radius: 12,
+                  //     action: checkrole,
+
+                  //     //  () {
+                  //     //   Navigator.push(
+                  //     //       context,
+                  //     //       MaterialPageRoute(
+                  //     //           builder: (context) => AttendancePage(
+                  //     //                 course: widget.course,
+                  //     //               )));
+                  //     // },
+                  //     child: const Center(
+                  //       child: Text(
+                  //         'Attendance',
+                  //         style: TextStyle(
+                  //             fontSize: 22, fontWeight: FontWeight.w500),
+                  //       ),
+                  //     )),
                   const SizedBox(height: 36),
                   Padding(
                     padding: const EdgeInsets.only(bottom: 2),
